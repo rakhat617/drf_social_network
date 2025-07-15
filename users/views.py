@@ -67,7 +67,7 @@ class UserModelViewSet(
 
 
 class FriendInvitesView(ViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsOwnerOrAdmin]
     pagination_class = CustomPageNumberPagination
 
     @swagger_auto_schema(
