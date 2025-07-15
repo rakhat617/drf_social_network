@@ -1,8 +1,6 @@
 from django.db import models
 from django.db.models import Q, CheckConstraint
 
-from users.models import Client
-
 
 class Chat(models.Model):
     is_group = models.BooleanField(
@@ -12,7 +10,9 @@ class Chat(models.Model):
         verbose_name="заголовок", max_length=100, blank=True, null=True
     )
     users = models.ManyToManyField(
-        to=Client, related_name="users_chats", verbose_name="пользователи"
+        to="users.Client",
+        related_name="users_chats",
+        verbose_name="пользователи",
     )
 
     class Meta:
@@ -39,7 +39,7 @@ class Message(models.Model):
         max_length=2000,
     )
     sender = models.ForeignKey(
-        to=Client,
+        to="users.Client",
         verbose_name="отправитель",
         on_delete=models.SET_NULL,
         null=True,

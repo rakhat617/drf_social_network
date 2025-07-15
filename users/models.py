@@ -7,10 +7,6 @@ from django.utils import timezone
 from dirtyfields import DirtyFieldsMixin
 
 
-def save_avatar_to(instance, filename):
-    return f"avatars/{instance.username}/{filename}"
-
-
 class Client(DirtyFieldsMixin, AbstractUser):
     is_active = models.BooleanField(
         verbose_name="активированный аккаунт", default=False
@@ -24,11 +20,13 @@ class Client(DirtyFieldsMixin, AbstractUser):
     expired_code = models.DateTimeField(
         verbose_name="срок действия кода"
     )
-    avatar = models.ImageField(
-        verbose_name="аватар пользователя",
-        upload_to=save_avatar_to,
-        blank=True,
+    avatar = models.OneToOneField(
+        to="images.Image",
+        on_delete=models.SET_NULL,
+        related_name="user_avatar",
         null=True,
+        verbose_name="аватар пользователя",
+        blank=True,
     )
     friends = models.ManyToManyField(
         to="self", verbose_name="друзья", blank=True
@@ -43,17 +41,17 @@ class Client(DirtyFieldsMixin, AbstractUser):
         return f"{self.pk} -> {self.username} -> {self.email}"
 
     def save(self, *args, **kwargs):
+        now = timezone.now()
+    
         if self.is_superuser:
             self.is_active = True
-            self.expired_code = timezone.now()
-            super().save(*args, **kwargs)
-            return
-        if self.pk:
-            super().save(*args, **kwargs)
-            return
-        self.expired_code = timezone.now() + timedelta(minutes=3)
-        super().save(*args, **kwargs)
-        return
+            self.expired_code = now
+            return super().save(*args, **kwargs)
+    
+        if not self.pk:
+            self.expired_code = now + timedelta(minutes=3)
+    
+        return super().save(*args, **kwargs)
 
 
 class FriendInvite(models.Model):

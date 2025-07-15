@@ -1,14 +1,27 @@
+import os
+import uuid
+
 from django.db import models
 from django.db.models import Q, CheckConstraint
 
-from publics.models import Public
-from users.models import Client
+
+def image_upload_to(instance, filename):
+    ext = os.path.splitext(filename)[1]
+    unique_name = f"{uuid.uuid4().hex}{ext}"
+
+    if hasattr(instance, "user_avatar"):
+        return f"avatars/users/{unique_name}"
+    elif hasattr(instance, "public_avatar"):
+        return f"avatars/publics/{unique_name}"
+    elif hasattr(instance, "post_usage"):
+        return f"posts/{unique_name}"
+    return f"misc/{unique_name}"
 
 
-class Images(models.Model):
+class Image(models.Model):
     image = models.ImageField(
         verbose_name="изображение",
-        upload_to="gallery/",
+        upload_to=image_upload_to,
     )
     created_at = models.DateTimeField(
         verbose_name="дата создания", auto_now_add=True
@@ -25,7 +38,7 @@ class Images(models.Model):
 
 class Gallery(models.Model):
     user = models.OneToOneField(
-        to=Client,
+        to="users.Client",
         on_delete=models.CASCADE,
         related_name="user_gallery",
         blank=True,
@@ -33,7 +46,7 @@ class Gallery(models.Model):
         verbose_name="пользователь",
     )
     public = models.OneToOneField(
-        to=Public,
+        to="publics.Public",
         on_delete=models.CASCADE,
         related_name="public_gallery",
         blank=True,
@@ -41,8 +54,8 @@ class Gallery(models.Model):
         verbose_name="паблик",
     )
     images = models.ManyToManyField(
-        to=Images,
-        related_name="gallery_images",
+        to=Image,
+        related_name="gallery_usage",
         verbose_name="изображения",
     )
 

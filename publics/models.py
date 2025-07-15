@@ -1,26 +1,20 @@
 from __future__ import annotations
 
 from django.db import models
-from django.utils.text import slugify
-
-from users.models import Client
-
-
-def save_avatar_to(instance: Public, filename: str):
-    safe_title = slugify(value=instance.title)
-    return f"publics/{safe_title}/{filename}"
 
 
 class Public(models.Model):
     owner = models.ForeignKey(
-        to=Client,
+        to="users.Client",
         on_delete=models.CASCADE,
         related_name="owned_publics",
         verbose_name="владелец паблика"
     )
-    avatar = models.ImageField(
+    avatar = models.OneToOneField(
+        to="images.Image",
         verbose_name="аватар пользователя",
-        upload_to=save_avatar_to,
+        related_name="public_avatar",
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )
@@ -34,7 +28,7 @@ class Public(models.Model):
         default=False
     )
     members = models.ManyToManyField(
-        to=Client,
+        to="users.Client",
         related_name="member_of_publics",
         verbose_name="участники"
     )
@@ -60,13 +54,13 @@ class PublicInvite(models.Model):
         related_name="public_invites"
     )
     invited_user = models.ForeignKey(
-        to=Client, 
+        to="users.Client", 
         on_delete=models.CASCADE,
         verbose_name="пользователь",
         related_name="invites_received"
     )
     invited_by = models.ForeignKey(
-        to=Client, 
+        to="users.Client", 
         on_delete=models.CASCADE, 
         related_name="invites_sent",
         verbose_name="кем приглашен"
