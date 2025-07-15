@@ -2,17 +2,21 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet, GenericViewSet, ModelViewSet
 from rest_framework.views import APIView
-from rest_framework import mixins
+from rest_framework import mixins, status
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from drf_yasg.utils import swagger_auto_schema
 
-from users.serializers import UserModelSerializer
-from users.models import Client
+from users.serializers import (
+    UserModelSerializer, FriendInviteSerializer,
+    CreateFriendInviteSerializer
+)
+from users.models import Client, FriendInvite
 from common.paginators import CustomPageNumberPagination
 from common.permissions import IsOwnerOrAdmin
 
@@ -60,3 +64,54 @@ class UserModelViewSet(
     @method_decorator(cache_page(timeout=600))
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
+
+
+class FriendInvitesView(ViewSet):
+    permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
+
+    @swagger_auto_schema(
+        responses={
+            200: FriendInviteSerializer
+        }
+    )
+    def list(self, request: Request):
+        invites = FriendInvite.objects.filter(
+            from_client=request.user
+        )
+        serializer = FriendInviteSerializer(
+            instance=invites, many=True, 
+            context={"action": self.action}
+        )
+        return Response(data=serializer.data)
+
+    @swagger_auto_schema(
+        request_body=CreateFriendInviteSerializer,
+        responses={
+            201: "invite created",
+            400: "validation error",
+            403: "permission error"
+        }
+    )
+    def create(self, request: Request):
+        serializer = CreateFriendInviteSerializer(
+            data=request.data, context={
+                "user": request.user,
+                "action": self.action
+            }
+        )
+        serializer.is_valid(raise_exception=True)
+        try:
+            serializer.save()
+        except Exception as e:
+            raise ValidationError(detail=str(e))
+        return Response(
+            data={"message": "invite created"},
+            status=status.HTTP_201_CREATED
+        )
+
+    def partial_update(self, request: Request, pk: int):
+        pass
+
+    def destroy(self, request: Request, pk: int):
+        pass

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 
-from users.models import Client
+from users.models import Client, FriendInvite
 
 
 class FriendSerializer(serializers.ModelSerializer):
@@ -102,3 +102,43 @@ class UserModelSerializer(serializers.ModelSerializer):
             )
             instance.friends.remove(*valid_friends_to_remove)
         return super().update(instance, validated_data)
+
+
+class CreateFriendInviteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FriendInvite
+        fields = [
+            "to_client",
+            "is_accepted"
+        ]
+        extra_kwargs = {
+            "to_client": {"required": False},
+            "is_accepted": {"required": False}
+        }
+
+    def validate(self, attrs: dict):
+        from_client: Client = self.context.get("user")
+        to_client: int = attrs.get("to_client")
+        if from_client.friends.filter(pk=to_client.pk).exists():
+            raise serializers.ValidationError(
+                detail="Ты шо дебил?"
+            )
+        attrs["from_client"] = from_client
+        return attrs
+
+
+class FriendInviteSerializer(serializers.ModelSerializer):
+    from_client = FriendSerializer(read_only=True)
+    to_client = FriendSerializer(read_only=True)
+    class Meta:
+        model = FriendInvite
+        fields = [
+            "from_client",
+            "to_client",
+            "date_created",
+            "is_accepted"
+        ]
+        extra_kwargs = {
+            "date_created": {"read_only": True},
+            "is_accepted": {"read_only": True}
+        }

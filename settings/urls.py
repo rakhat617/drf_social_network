@@ -14,10 +14,8 @@ from users.views import (
     RegistrationViewSet,
     ActivateAccount,
     UserModelViewSet,
+    FriendInvitesView
 )
-# from chats.views import ChatsViewSet, MessagesViewSet
-# from publics.views import PublicViewSet
-# from images.views import GalleryView, ImagesView
 
 
 router = DefaultRouter()
@@ -28,6 +26,10 @@ router.register(
 )
 router.register(
     prefix="users", viewset=UserModelViewSet, basename="users"
+)
+router.register(
+    prefix="invites", viewset=FriendInvitesView,
+    basename="invites"
 )
 # router.register(
 #     prefix="chats", viewset=ChatsViewSet,
