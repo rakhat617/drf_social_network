@@ -122,7 +122,8 @@ class FriendInvitesView(ViewSet):
             FriendInvite, pk=pk
         )
         serializer = CreateFriendInviteSerializer(
-            instance=invite, data=request.data, partial=True
+            instance=invite, data=request.data, partial=True,
+            context={"user": request.user}
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()

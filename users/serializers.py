@@ -112,7 +112,7 @@ class CreateFriendInviteSerializer(serializers.ModelSerializer):
             "is_accepted"
         ]
         extra_kwargs = {
-            "to_client": {"required": False},
+            "to_client": {"required": True},
             "is_accepted": {"required": False}
         }
 
@@ -133,6 +133,7 @@ class FriendInviteSerializer(serializers.ModelSerializer):
     class Meta:
         model = FriendInvite
         fields = [
+            "pk",
             "from_client",
             "to_client",
             "date_created",
