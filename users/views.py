@@ -81,7 +81,6 @@ class FriendInvitesView(ViewSet):
         )
         serializer = FriendInviteSerializer(
             instance=invites, many=True, 
-            context={"action": self.action}
         )
         return Response(data=serializer.data)
 
@@ -97,7 +96,6 @@ class FriendInvitesView(ViewSet):
         serializer = CreateFriendInviteSerializer(
             data=request.data, context={
                 "user": request.user,
-                "action": self.action
             }
         )
         serializer.is_valid(raise_exception=True)
