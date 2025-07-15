@@ -108,8 +108,36 @@ class FriendInvitesView(ViewSet):
             status=status.HTTP_201_CREATED
         )
 
+    @swagger_auto_schema(
+        request_body=CreateFriendInviteSerializer,
+        responses={
+            200: "success",
+            400: "validation error",
+            403: "not authorized",
+            404: "not found"
+        }
+    )
     def partial_update(self, request: Request, pk: int):
-        pass
+        invite: FriendInvite = get_object_or_404(
+            FriendInvite, pk=pk
+        )
+        serializer = CreateFriendInviteSerializer(
+            instance=invite, data=request.data, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(data={"message": "success"})
 
+    @swagger_auto_schema(
+        responses={
+            200: "success",
+            403: "forbidden",
+            404: "not found"
+        }
+    )
     def destroy(self, request: Request, pk: int):
-        pass
+        invite: FriendInvite = get_object_or_404(
+            FriendInvite, pk=pk
+        )
+        invite.delete()
+        return Response(data={"message": "success"})
