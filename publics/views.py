@@ -11,7 +11,7 @@
 # from django.contrib.auth.models import User
 # from drf_yasg.utils import swagger_auto_schema
 
-# # from publics.models import Public, PublicInvite
+# from publics.models import Public, PublicInvite
 # from publics.serializers import (
 #     PublicSerializer, PublicViewSerializer,
 # )

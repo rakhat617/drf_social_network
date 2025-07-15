@@ -1,7 +1,6 @@
-# from django.contrib import admin
+from django.contrib import admin
 
-# from publics.models import Public
+from publics.models import Public, PublicInvite
 
-# # Register your models here.
 
-# admin.site.register(Public)
+admin.site.register([Public, PublicInvite])
