@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import TemplateView
 from debug_toolbar.toolbar import debug_toolbar_urls
 from rest_framework.routers import DefaultRouter
 from rest_framework import permissions
@@ -14,7 +15,7 @@ from users.views import (
     RegistrationViewSet,
     ActivateAccount,
     UserModelViewSet,
-    FriendInvitesView
+    FriendInvitesView,
 )
 
 
@@ -28,8 +29,7 @@ router.register(
     prefix="users", viewset=UserModelViewSet, basename="users"
 )
 router.register(
-    prefix="invites", viewset=FriendInvitesView,
-    basename="invites"
+    prefix="invites", viewset=FriendInvitesView, basename="invites"
 )
 # router.register(
 #     prefix="chats", viewset=ChatsViewSet,
@@ -66,6 +66,10 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path(
+        route="",
+        view=TemplateView.as_view(template_name="api/authorization.html"),
+    ),
     path(route="admin/", view=admin.site.urls),
     path(
         route="api/token/",

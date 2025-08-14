@@ -18,6 +18,7 @@ ALLOWED_HOSTS = ["*"]
 AUTH_USER_MODEL = "users.Client"
 
 INSTALLED_APPS = [
+    "corsheaders",
     "daphne",
     "rest_framework_simplejwt",
     "drf_yasg",
@@ -42,6 +43,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "corsheaders.middleware.CorsMiddleware", 
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -67,6 +69,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "settings.wsgi.application"
 ASGI_APPLICATION = "settings.asgi.application"
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ORIGINS = []
 
 DATABASES = {
     "default": {

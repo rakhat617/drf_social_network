@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+    <div class="auth-container">
+        <h2>Вход</h2>
+        <form method="post" action="#" class="auth_form">
+            <div class="input-group">
+                <input type="text" name="username" placeholder="Имя пользователя" required autocomplete="off">
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Пароль" required>
+            </div>
+            <button type="submit" onclick="">Войти</button>
+        </form>
+        <p>Нет аккаунта? Зарегистрироваться</p>
+    </div>
+    <script>
+        const form = document.querySelector(".auth_form");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault(); // не даём форме перезагрузить страницу
+            const formData = new FormData(form);
+            // формируем объект
+            const payload = {
+                username: formData.get("username"),
+                password: formData.get("password")
+            };
+
+            try {
+                const response = await fetch("/api/token/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Ошибка ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Успешный логин:", data);
+
+            } catch (err) {
+                console.error("Ошибка при запросе:", err);
+            }
+        });
+
+    </script>
+</body>
+</html>
