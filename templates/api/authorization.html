@@ -10,7 +10,7 @@
 <body>
     <div class="auth-container">
         <h2>Вход</h2>
-        <form method="post" action="#" class="auth_form">
+        <form method="post" class="auth_form">
             <div class="input-group">
                 <input type="text" name="username" placeholder="Имя пользователя" required autocomplete="off">
             </div>
@@ -19,41 +19,8 @@
             </div>
             <button type="submit" onclick="">Войти</button>
         </form>
-        <p>Нет аккаунта? Зарегистрироваться</p>
+        <p>Нет аккаунта? <a href="{% url 'registration' %}">Зарегистрироваться</a></p>
     </div>
-    <script>
-        const form = document.querySelector(".auth_form");
-
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault(); // не даём форме перезагрузить страницу
-            const formData = new FormData(form);
-            // формируем объект
-            const payload = {
-                username: formData.get("username"),
-                password: formData.get("password")
-            };
-
-            try {
-                const response = await fetch("/api/token/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Ошибка ${response.status}`);
-                }
-
-                const data = await response.json();
-                console.log("Успешный логин:", data);
-
-            } catch (err) {
-                console.error("Ошибка при запросе:", err);
-            }
-        });
-
-    </script>
+    <script src="{% static 'js/auth.js' %}"></script>
 </body>
 </html>

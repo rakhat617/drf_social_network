@@ -64,12 +64,25 @@ schema_view = get_schema_view(
     public=True,
     permission_classes=(permissions.AllowAny,),
 )
+template_patterns = [
+    path(
+        route="login/",
+        view=TemplateView.as_view(
+            template_name="api/authorization.html"
+        ),
+        name="login"
+    ),
+    path(
+        route="reg/",
+        view=TemplateView.as_view(
+            template_name="api/registration.html"
+        ),
+        name="registration"
+    )
+]
 
 urlpatterns = [
-    path(
-        route="",
-        view=TemplateView.as_view(template_name="api/authorization.html"),
-    ),
+    path(route="", view=include(template_patterns)),
     path(route="admin/", view=admin.site.urls),
     path(
         route="api/token/",
