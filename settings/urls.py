@@ -78,7 +78,14 @@ template_patterns = [
             template_name="api/registration.html"
         ),
         name="registration"
-    )
+    ),
+    path(
+        route="users/",
+        view=TemplateView.as_view(
+            template_name="api/users.html"
+        ),
+        name="users"
+    ),
 ]
 
 urlpatterns = [
