@@ -1,14 +1,14 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet, GenericViewSet, ModelViewSet
+from rest_framework.viewsets import ViewSet, GenericViewSet
 from rest_framework.views import APIView
 from rest_framework import mixins, status
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.exceptions import PermissionDenied, ValidationError
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.exceptions import PermissionDenied, ValidationError, NotFound
+from rest_framework.permissions import AllowAny
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from drf_yasg.utils import swagger_auto_schema
 
@@ -31,19 +31,30 @@ class RegistrationViewSet(mixins.CreateModelMixin, GenericViewSet):
 class ActivateAccount(APIView):
     permission_classes = [AllowAny]
 
+    def _wants_json(self, request) -> bool:
+        accept = request.META.get("HTTP_ACCEPT", "")
+        return "application/json" in accept.lower()
+
     def get(self, request: Request, pk: int) -> Response:
         code = request.query_params.get("code")
-        user: Client = get_object_or_404(
-            Client, pk=pk, activation_code=code
-        )
+        try:
+            user: Client = Client.objects.get(pk=pk, activation_code=code)
+        except Client.DoesNotExist:
+            if self._wants_json(request):
+                raise NotFound(detail="activation link invalid")
+            return render(request, "api/activation_failed.html")
         now = timezone.now()
         if now > user.expired_code:
-            raise PermissionDenied()
+            if self._wants_json(request):
+                raise PermissionDenied(detail="code expired")
+            return render(request, "api/activation_failed.html")
         user.is_active = True
-        user.save()
-        return Response(data={"message": "activation success!"})
-
-
+        user.save(update_fields=["is_active"])
+        if self._wants_json(request):
+            return Response({"message": "activation success!"})
+        return render(request, "api/activation_success.html")
+    
+    
 class UserModelViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,

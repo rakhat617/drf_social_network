@@ -66,25 +66,9 @@ schema_view = get_schema_view(
 )
 template_patterns = [
     path(
-        route="login/",
-        view=TemplateView.as_view(
-            template_name="api/authorization.html"
-        ),
-        name="login"
-    ),
-    path(
-        route="reg/",
-        view=TemplateView.as_view(
-            template_name="api/registration.html"
-        ),
-        name="registration"
-    ),
-    path(
-        route="users/",
-        view=TemplateView.as_view(
-            template_name="api/users.html"
-        ),
-        name="users"
+        route="",
+        view=TemplateView.as_view(template_name="api/base.html"),
+        name="base"
     ),
 ]
 
@@ -108,7 +92,7 @@ urlpatterns = [
         name="schema-swagger-ui",
     ),
     path(
-        "api/v1/users/activate/<int:pk>/",
+        "activate/<int:pk>/",
         ActivateAccount.as_view(),
         name="activate-account",
     ),

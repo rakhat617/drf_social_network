@@ -2,19 +2,15 @@ const form = document.querySelector(".auth_form");
 
 form.addEventListener("submit", async (e) => {
     e.preventDefault(); 
-    // не даём форме перезагрузить страницу
-    const formData = new FormData(form);
-    // формируем объект
     const payload = {
-        username: formData.get("username"),
-        password: formData.get("password")
+        username: form.username.value,
+        password: form.password.value
     };
     try {
         const response = await fetch("/api/token/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                // "X-CSRFToken": getCookie("csrftoken") 
             },
             body: JSON.stringify(payload)
         });

@@ -14,8 +14,7 @@ class ActivateAccountTask(Task):
                 template="activation.html", to=email,
                 context={
                     "username": username,
-                    "code": ("http://127.0.0.1:8000/api/v1/"
-                             f"users/activate/{pk}/?code={code}"),
+                    "code": ("http://127.0.0.1:8000/activate/{pk}/?code={code}"),
                 },
                 title="Confirm your account",
             )
