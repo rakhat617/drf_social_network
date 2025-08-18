@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 
 from users.models import Client, FriendInvite
+from images.serializers import ImagesSerializer
 
 
 class FriendSerializer(serializers.ModelSerializer):
@@ -26,6 +27,7 @@ class UserModelSerializer(serializers.ModelSerializer):
     friends = serializers.SerializerMethodField(
         method_name="serialize_friends"
     )
+    avatar = ImagesSerializer(read_only=True)
 
     class Meta:
         model = Client

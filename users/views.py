@@ -54,7 +54,7 @@ class ActivateAccount(APIView):
             return Response({"message": "activation success!"})
         return render(request, "api/activation_success.html")
     
-    
+
 class UserModelViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -63,10 +63,11 @@ class UserModelViewSet(
     GenericViewSet,
 ):
     permission_classes = [IsOwnerOrAdmin]
-    queryset = Client.objects.all()
+    queryset = Client.objects.all().select_related("avatar")
     serializer_class = UserModelSerializer
     parser_classes = [MultiPartParser, FormParser]
     pagination_class = CustomPageNumberPagination
+    filter_backends = ...
 
     @method_decorator(cache_page(timeout=600))
     def list(self, request, *args, **kwargs):
