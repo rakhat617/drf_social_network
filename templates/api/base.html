@@ -16,20 +16,12 @@
     <!-- Content -->
     <div class="flex flex-1">
         <!-- Aside -->
-        <aside id="aside" class="w-60 bg-gray-100 border-r p-4 space-y-2">
-            <p class="font-semibold">Навигация</p>
-            <nav class="space-y-1">
-                <a href="#" class="block hover:bg-gray-200 p-2 rounded">Друзья</a>
-                <a href="#" class="block hover:bg-gray-200 p-2 rounded">Сообщения</a>
-                <a href="#" class="block hover:bg-gray-200 p-2 rounded">Группы</a>
-                <a href="#" class="block hover:bg-gray-200 p-2 rounded">Галерея</a>
-            </nav>
-        </aside>
+        {% include "api/partials/aside.html" %}
 
         <!-- Main -->
         <main class="flex-1 p-6">
             <h1 class="text-2xl font-bold mb-4">Главная страница</h1>
-            <div class="main">
+            <div id="main-block">
                 <!-- Тут будет контент -->
             </div>
         </main>
@@ -110,5 +102,6 @@
     <script src="{% static 'js/login_mod.js' %}"></script>
     <script src="{% static 'js/reg_mod.js' %}"></script>
     <script src="{% static 'js/change_mods.js' %}"></script>
+    <script src="{% static 'js/get_users.js' %}"></script>
 </body>
 </html>
