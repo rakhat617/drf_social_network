@@ -1,5 +1,6 @@
 from typing import Any
 
+from loguru import logger
 from rest_framework.request import Request
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import BaseFilterBackend
@@ -15,6 +16,10 @@ class SearchFilter(BaseFilterBackend):
     ):
         search_fields: list = getattr(view, "search_fields", [])
         search_value = request.query_params.get("search")
+        if not search_value:
+            logger.info("There is no search value")
+            return queryset
+        logger.info("We get value, let's filter this shit")
         queryset = queryset.filter(
             Q(username__icontains=search_value)
         )

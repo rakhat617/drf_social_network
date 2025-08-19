@@ -107,7 +107,7 @@ async function getFriends () {
 
 async function makeSearch (username) {
     try {
-        const response = await fetch(`/api/v1/users/?username=${username}`, {
+        const response = await fetch(`/api/v1/users/?search=${username}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

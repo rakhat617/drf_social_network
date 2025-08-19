@@ -161,4 +161,4 @@ class FriendInvitesView(ViewSet):
 # search - поиск по значению
 # orderBy (asc/desc) - сортировка по убыванию/возрастанию
 # filter/sortBy - сортировка по каким нибудь атрибутам 
-# http://localhost/api/users/&search=Иван&sortBy=birthday&orderBy=asc
+# http://localhost/api/users/&search=Иван Иванов&sortBy=birthday&orderBy=asc
