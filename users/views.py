@@ -19,6 +19,7 @@ from users.serializers import (
 from users.models import Client, FriendInvite
 from common.paginators import CustomPageNumberPagination
 from common.permissions import IsOwnerOrAdmin
+from common.filters import SearchFilter
 
 
 class RegistrationViewSet(mixins.CreateModelMixin, GenericViewSet):
@@ -67,7 +68,8 @@ class UserModelViewSet(
     serializer_class = UserModelSerializer
     parser_classes = [MultiPartParser, FormParser]
     pagination_class = CustomPageNumberPagination
-    filter_backends = ...
+    filter_backends = [SearchFilter]
+    search_fields = ["username"]
 
     @method_decorator(cache_page(timeout=600))
     def list(self, request, *args, **kwargs):
@@ -154,3 +156,9 @@ class FriendInvitesView(ViewSet):
         )
         invite.delete()
         return Response(data={"message": "success"})
+
+# QUERY_PARAMS
+# search - поиск по значению
+# orderBy (asc/desc) - сортировка по убыванию/возрастанию
+# filter/sortBy - сортировка по каким нибудь атрибутам 
+# http://localhost/api/users/&search=Иван&sortBy=birthday&orderBy=asc
