@@ -20,8 +20,15 @@ class SearchFilter(BaseFilterBackend):
             logger.info("There is no search value")
             return queryset
         logger.info("We get value, let's filter this shit")
-        queryset = queryset.filter(
-            Q(username__icontains=search_value)
-        )
-        return queryset
+        query = Q()
+        for field in search_fields:
+            query |= Q(**{f"{field}__icontains": search_value})
+            
+        return queryset.filter(query)
         
+
+class SortFilter(BaseFilterBackend):
+    """
+    Создайте фильтр сортировки по date_joined
+    Во вьюшке создайте атрибут sort_by_fields
+    """

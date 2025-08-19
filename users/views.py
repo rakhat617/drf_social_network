@@ -69,7 +69,8 @@ class UserModelViewSet(
     parser_classes = [MultiPartParser, FormParser]
     pagination_class = CustomPageNumberPagination
     filter_backends = [SearchFilter]
-    search_fields = ["username"]
+    search_fields = ["username", "email"]
+    sort_by_fields = []
 
     @method_decorator(cache_page(timeout=600))
     def list(self, request, *args, **kwargs):
