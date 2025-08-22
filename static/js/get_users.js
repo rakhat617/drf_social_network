@@ -19,9 +19,11 @@ function initFriendsUI() {
     }
 }
 
-async function getFriends () {
+//тут я немножко поменял. у меня функция будет принимать юрл, но он по дефолту такой, какой мы и писали в fetch внизу
+//это как раз нужно чтобы мы могли вызывать эту функцию с другим номером страницы в юрле
+async function getFriends (url="/api/v1/users/") { 
     try {
-        const response = await fetch("/api/v1/users/", {
+        const response = await fetch(url, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -52,6 +54,66 @@ async function getFriends () {
                 </div>
             </div>
         `).join("");
+        
+        const paginationBlock = document.createElement("div"); // создаем внизу общий див для кнопок
+        paginationBlock.className = "flex gap-2 mt-4"; // стили от гптшки
+        
+        // это крч создаем объект класса URL, который поможет нам легче работать с юрл ссылкой
+        const urlObj = new URL(url, window.location.origin);
+        // вот как раз тут используем метод searchParams чтобы у этого юрл именно номер страницы взять
+        // чтобы определить на какой мы странице. если там нет номера, значит мы на 1 странице
+        const currentPage = parseInt(urlObj.searchParams.get("page")) || 1;
+        // ну а тут мы просто математически общее кол-во страниц находим
+        const totalPages = Math.ceil(apiData.count / 10);
+        
+        //создаем кнопку которая вернет нас в начало, если уже не видно кнопки для 1 страницы
+        if (currentPage-4 > 1) {
+            const firstBtn = document.createElement("button");
+            firstBtn.textContent = "<<";
+            firstBtn.className = "px-3 py-1 bg-gray-200 rounded hover:bg-gray-300";
+            firstBtn.addEventListener("click", () => getFriends(`/api/v1/users/?page=${1}`));
+            paginationBlock.appendChild(firstBtn);
+        }
+
+        // создаем кнопку назад которая будет видна если мы не на 1 странице
+        if (currentPage > 1) {
+            const prevBtn = document.createElement("button");
+            prevBtn.textContent = "<";
+            prevBtn.className = "px-3 py-1 bg-gray-200 rounded hover:bg-gray-300";
+            prevBtn.addEventListener("click", () => getFriends(`/api/v1/users/?page=${currentPage - 1}`));
+            paginationBlock.appendChild(prevBtn);
+        }
+
+        // создаем кнопки для страниц, но не всех, а только ближайших 4 с обоих сторон. рандомно выбрал это число
+        for (let i = currentPage-4; i <= currentPage+4; i++) {
+            if (i < 1 || i > totalPages) continue;
+            const pageBtn = document.createElement("button");
+            pageBtn.textContent = i;
+            pageBtn.className = `px-3 py-1 rounded ${i === currentPage ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`;
+            pageBtn.addEventListener("click", () => getFriends(`/api/v1/users/?page=${i}`));
+            paginationBlock.appendChild(pageBtn);
+        }
+
+        // создаем кнопку вперед которая будет видна если мы не на последней странице
+        if (currentPage < totalPages) {
+            const nextBtn = document.createElement("button");
+            nextBtn.textContent = ">";
+            nextBtn.className = "px-3 py-1 bg-gray-200 rounded hover:bg-gray-300";
+            nextBtn.addEventListener("click", () => getFriends(`/api/v1/users/?page=${currentPage + 1}`));
+            paginationBlock.appendChild(nextBtn);
+        }
+
+        // создаем кнопку которая кинет нас в самый конец, если уже не видно кнопки посл страницы
+        if (currentPage+4 < totalPages) {
+            const lastBtn = document.createElement("button");
+            lastBtn.textContent = ">>";
+            lastBtn.className = "px-3 py-1 bg-gray-200 rounded hover:bg-gray-300";
+            lastBtn.addEventListener("click", () => getFriends(`/api/v1/users/?page=${totalPages}`));
+            paginationBlock.appendChild(lastBtn);
+        }
+
+        //ну и добавляем все это в наш юзерблок общий
+        usersBlock.appendChild(paginationBlock);
 
         document.querySelectorAll(".user-card").forEach(card => {
             card.addEventListener("click", async () => {
