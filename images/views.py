@@ -28,6 +28,9 @@ class ImageViewSet(
     GenericViewSet
 ):
     queryset = Image.objects.all()
-    permission_classes = [IsAuthenticated]
+    # Здесь пришлось поменять с IsAuthenticated на AllowAny, 
+    # потому что теперь мы этот вьюсет вызываем при регистрации, 
+    # т.е. когда мы еще не авторизированы
+    permission_classes = [AllowAny]
     serializer_class = ImagesSerializer
     parser_classes = [MultiPartParser, FormParser]

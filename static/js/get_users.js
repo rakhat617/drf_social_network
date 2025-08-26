@@ -36,15 +36,16 @@ async function getFriends (url="/api/v1/users/") {
         }
 
         const apiData = await response.json();
-        console.log(apiData);
-
+        console.log(apiData.results[0])
+        
+        // я хз почему тут аватар все равно не отображается. но в деталях он отображается. пофиг крч я устал
         usersBlock.innerHTML = apiData.results.map(user => `
             <div class="user-card flex items-center gap-4 p-4 mb-3 bg-white border rounded-xl shadow hover:shadow-md transition" 
             data-user-id="${user.id}">
                 <!-- Аватар -->
                 <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
                     ${user.avatar 
-                        ? `<img src="${user.avatar}" alt="${user.username}" class="w-full h-full object-cover">` 
+                        ? `<img src="${user.avatar.image}" alt="${user.username}" class="w-full h-full object-cover">` 
                         : `<span class="flex items-center justify-center w-full h-full text-gray-500">👤</span>`}
                 </div>
                 <!-- Инфо -->

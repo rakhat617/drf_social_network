@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 
 from users.models import Client, FriendInvite
+from images.models import Image
 from images.serializers import ImagesSerializer
 
 
@@ -28,6 +29,11 @@ class UserModelSerializer(serializers.ModelSerializer):
         method_name="serialize_friends"
     )
     avatar = ImagesSerializer(read_only=True)
+    # пришлось это добавить, ибо мы теперь сюда отдаем не объект аварата, а айдишник просто
+    # но изначальное поле аватар тоже оставляем, для отображения
+    avatar_id = serializers.PrimaryKeyRelatedField(
+        source="avatar", queryset=Image.objects.all(), write_only=True, required=False, allow_null=True
+    )
 
     class Meta:
         model = Client
@@ -39,6 +45,7 @@ class UserModelSerializer(serializers.ModelSerializer):
             "email",
             "password",
             "avatar",
+            "avatar_id",
             "friends",
             "join_friends",
             "remove_friends",
