@@ -1,0 +1,16 @@
+# FROM python:3.13.7 базовый (полный) образ на полноценном линуксе
+# FROM python:3.13.7-slim чуток урезанный (раза в 2 легче)
+# FROM python:3.13.7-slim-bullseye сильно урезанный образ (будет весить раза в 3 меньше)
+# FROM python:3.13.7-alpine мегабайт 300 ничего нету (не надо, дядя)
+
+FROM python:3.13.7-slim
+
+WORKDIR /app #рабочая директория внутри контейнера
+
+COPY requirements.txt . #копируем файл с зависимостями внутрь контейнера
+
+RUN pip install -r requirements.txt #устанавливаем зависимостями
+
+COPY . . #копируем наши файлы внутрь контейнера
+
+RUN python manage.py runserver

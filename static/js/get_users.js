@@ -1,5 +1,5 @@
 const mainBlock = document.querySelector("#main-block");
-const friendButton = document.querySelector("#friend-finder");
+const usersButton = document.querySelector("#friend-finder");
 const access = localStorage.getItem("access");
 const searchInput = document.querySelector("#search-input");
 
@@ -10,7 +10,7 @@ const usersBlock = document.createElement("div");
 usersBlock.id = "users-list";
 
 // при первом клике вставим в DOM
-function initFriendsUI() {
+function initUsersUI() {
     if (!mainBlock.contains(searchBlock)) {
         mainBlock.appendChild(searchBlock);
     }
@@ -21,7 +21,7 @@ function initFriendsUI() {
 
 //тут я немножко поменял. у меня функция будет принимать юрл, но он по дефолту такой, какой мы и писали в fetch внизу
 //это как раз нужно чтобы мы могли вызывать эту функцию с другим номером страницы в юрле
-async function getFriends (url="/api/v1/users/") { 
+async function getUsers (url="/api/v1/users/") { 
     try {
         const response = await fetch(url, {
             method: "GET",
@@ -72,7 +72,7 @@ async function getFriends (url="/api/v1/users/") {
             const firstBtn = document.createElement("button");
             firstBtn.textContent = "<<";
             firstBtn.className = "px-3 py-1 bg-gray-200 rounded hover:bg-gray-300";
-            firstBtn.addEventListener("click", () => getFriends(`/api/v1/users/?page=${1}`));
+            firstBtn.addEventListener("click", () => getUsers(`/api/v1/users/?page=${1}`));
             paginationBlock.appendChild(firstBtn);
         }
 
@@ -81,7 +81,7 @@ async function getFriends (url="/api/v1/users/") {
             const prevBtn = document.createElement("button");
             prevBtn.textContent = "<";
             prevBtn.className = "px-3 py-1 bg-gray-200 rounded hover:bg-gray-300";
-            prevBtn.addEventListener("click", () => getFriends(`/api/v1/users/?page=${currentPage - 1}`));
+            prevBtn.addEventListener("click", () => getUsers(`/api/v1/users/?page=${currentPage - 1}`));
             paginationBlock.appendChild(prevBtn);
         }
 
@@ -91,7 +91,7 @@ async function getFriends (url="/api/v1/users/") {
             const pageBtn = document.createElement("button");
             pageBtn.textContent = i;
             pageBtn.className = `px-3 py-1 rounded ${i === currentPage ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`;
-            pageBtn.addEventListener("click", () => getFriends(`/api/v1/users/?page=${i}`));
+            pageBtn.addEventListener("click", () => getUsers(`/api/v1/users/?page=${i}`));
             paginationBlock.appendChild(pageBtn);
         }
 
@@ -100,7 +100,7 @@ async function getFriends (url="/api/v1/users/") {
             const nextBtn = document.createElement("button");
             nextBtn.textContent = ">";
             nextBtn.className = "px-3 py-1 bg-gray-200 rounded hover:bg-gray-300";
-            nextBtn.addEventListener("click", () => getFriends(`/api/v1/users/?page=${currentPage + 1}`));
+            nextBtn.addEventListener("click", () => getUsers(`/api/v1/users/?page=${currentPage + 1}`));
             paginationBlock.appendChild(nextBtn);
         }
 
@@ -109,7 +109,7 @@ async function getFriends (url="/api/v1/users/") {
             const lastBtn = document.createElement("button");
             lastBtn.textContent = ">>";
             lastBtn.className = "px-3 py-1 bg-gray-200 rounded hover:bg-gray-300";
-            lastBtn.addEventListener("click", () => getFriends(`/api/v1/users/?page=${totalPages}`));
+            lastBtn.addEventListener("click", () => getUsers(`/api/v1/users/?page=${totalPages}`));
             paginationBlock.appendChild(lastBtn);
         }
 
@@ -281,9 +281,9 @@ function renderSearch() {
     });
 };
 
-friendButton.addEventListener("click", async (e) => {
+usersButton.addEventListener("click", async (e) => {
     e.preventDefault();
-    initFriendsUI();
+    initUsersUI();
     renderSearch();
-    await getFriends();
+    await getUsers();
 });
